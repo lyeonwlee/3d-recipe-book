@@ -123,3 +123,5 @@ main{height:100svh;display:grid;place-items:center}
 .network-title small{display:block;font:12px monospace;letter-spacing:4px;margin-top:15px;color:#d7cfc2}
 @media(prefers-reduced-motion:reduce){#openNetwork{transition:none}}
 .network-title{left:610px;top:1140px;font-size:28px}
+
+.kraft-folder.closed #openNetwork{pointer-events:none}

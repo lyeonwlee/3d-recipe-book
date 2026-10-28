@@ -70,8 +70,9 @@ posterView.onclick=e=>{if(performance.now()<posterIgnoreUntil||e.target.closest(
 document.addEventListener('keydown',e=>{if(posterView.hidden)return;if(e.key==='Escape')closePoster();if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();posterSheet.click()}});
 
 const folderLeft=document.querySelector('.folder-left'),kraftFolder=document.querySelector('.kraft-folder');
+for(const item of kraftFolder.querySelectorAll('.folder-right button'))item.tabIndex=kraftFolder.classList.contains('closed')?-1:0;
 function toggleFolder(){const closed=kraftFolder.classList.toggle('closed');folderLeft.setAttribute('aria-expanded',String(!closed));folderLeft.setAttribute('aria-label',closed?'크라프트 파일 열기':'크라프트 파일 닫기');for(const item of kraftFolder.querySelectorAll('.folder-right button'))item.tabIndex=closed?-1:0}
-folderLeft.addEventListener('click',e=>{if(e.target.closest('#openNetwork'))return;toggleFolder()});
+folderLeft.addEventListener('click',e=>{if(kraftFolder.classList.contains('closed')){toggleFolder();return}if(e.target.closest('#openNetwork'))return;toggleFolder()});
 folderLeft.addEventListener('keydown',e=>{if(e.target===folderLeft&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleFolder()}});
 // Evidence images extracted from the supplied artwork, linked by threads in 3D.
 const networkView=document.querySelector('#networkView'),networkWorld=document.querySelector('#networkWorld'),networkCamera=document.querySelector('#networkCamera');
@@ -82,7 +83,7 @@ for(const [a,b] of connections){const A=evidencePositions[a],B=evidencePositions
 networkWorld.insertAdjacentHTML('beforeend','<div class="network-title">ACCOMPLICE NETWORK<small>GUILTY UNTIL DELICIOUS</small></div>');
 let netPanX=0,netPanY=0,netYaw=-8,netTilt=5,netZoom=1,netDrag=null,netIgnoreUntil=0;
 function renderNetwork(){const fit=Math.min(window.innerWidth/1800,window.innerHeight/1200)*.9;networkCamera.style.transform=`translate(${netPanX}px,${netPanY}px) scale(${fit*netZoom})`;networkWorld.style.transform=`rotateX(${netTilt}deg) rotateY(${netYaw}deg)`}
-document.querySelector('#openNetwork').addEventListener('click',e=>{e.stopPropagation();if(kraftFolder.classList.contains('closed'))return;networkView.hidden=false;netPanX=netPanY=0;netYaw=-8;netTilt=5;netZoom=1;renderNetwork();networkView.tabIndex=-1;networkView.focus()});
+document.querySelector('#openNetwork').addEventListener('click',e=>{e.stopPropagation();if(kraftFolder.classList.contains('closed')){toggleFolder();return}networkView.hidden=false;netPanX=netPanY=0;netYaw=-8;netTilt=5;netZoom=1;renderNetwork();networkView.tabIndex=-1;networkView.focus()});
 function closeNetwork(){networkView.hidden=true;netDrag=null;networkView.classList.remove('dragging');document.querySelector('#openNetwork').focus({preventScroll:true})}
 networkView.addEventListener('pointerdown',e=>{if(e.button!==0)return;netDrag={id:e.pointerId,x:e.clientX,y:e.clientY,yaw:netYaw,tilt:netTilt,px:netPanX,py:netPanY,pan:e.shiftKey,moved:false}});
 networkView.addEventListener('pointermove',e=>{if(!netDrag||e.pointerId!==netDrag.id)return;const dx=e.clientX-netDrag.x,dy=e.clientY-netDrag.y;if(Math.hypot(dx,dy)>6){netDrag.moved=true;networkView.setPointerCapture(e.pointerId);networkView.classList.add('dragging')}if(!netDrag.moved)return;if(netDrag.pan){netPanX=netDrag.px+dx;netPanY=netDrag.py+dy}else{netYaw=Math.max(-55,Math.min(55,netDrag.yaw+dx*.15));netTilt=Math.max(-40,Math.min(40,netDrag.tilt-dy*.12))}renderNetwork()});

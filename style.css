@@ -136,3 +136,17 @@ main{height:100svh;display:grid;place-items:center}
 #openNetwork{transform:translateZ(1px) rotate(-3deg)}
 #openNetwork:hover{transform:translateZ(1px) rotate(-1deg) translateY(-2%)}
 @media(prefers-reduced-motion:reduce){.kraft-folder,.folder-left{transition:none}}
+
+/* Scanned-looking aged kraft: paper fibers, handling wear and uneven patina. */
+.folder-right,.folder-inner,.folder-outer,.kraft-pocket,.folder-tab{
+ background-color:#b88e57;
+ background-image:radial-gradient(ellipse at 96% 86%,#34230b20,transparent 31%),linear-gradient(100deg,#49300a12,transparent 24%,#ead4a10a 65%,#50351412),url("kraft-aged.png");
+ background-size:100% 100%;background-repeat:no-repeat;
+ border-color:#bba06f;
+}
+.folder-outer{background-position:center;box-shadow:inset 0 0 0 1px #e0c89a80,inset 3px 0 8px #432a1244,inset -2px -3px 7px #49301a35,0 3px 6px #0005}
+.folder-inner{background-position:25% 40%;box-shadow:inset -14px 0 16px -12px #3b250caa,inset 1px 1px 3px #eed9ad88}
+.folder-right{box-shadow:inset 14px 0 18px -13px #3b250c99,inset -2px -2px 4px #51320d66}
+.kraft-pocket{background-size:100% 100%,100% 100%,100% 230%;background-position:center,center,center bottom;box-shadow:inset 0 3px 4px #e0c38b88,inset -2px -2px 4px #50320d66}
+.kraft-pocket:before{background:#d4b68199;box-shadow:0 2px 4px #50320d77}
+.folder-tab{background-position:center top;box-shadow:inset 0 1px 2px #dfc69b88}

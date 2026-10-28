@@ -123,3 +123,9 @@ main{height:100svh;display:grid;place-items:center}
 .network-title small{display:block;font:12px monospace;letter-spacing:4px;margin-top:15px;color:#d7cfc2}
 @media(prefers-reduced-motion:reduce){#openNetwork{transition:none}}
 .network-title{left:610px;top:1140px;font-size:28px}
+/* Let the wanted poster rise above the wallet instead of clipping at its rim. */
+.folder-right{overflow:visible}
+.folder-right .recipe-insert{clip-path:inset(-100% -100% 12% -100%)}
+.folder-right .poster-insert{transition:top .45s,transform .45s,box-shadow .45s}
+.folder-right .poster-insert:hover,.folder-right .poster-insert:focus-visible{top:-7%;transform:rotate(-3deg);z-index:7;box-shadow:3px 12px 20px #0007}
+.kraft-folder.closed .poster-insert{z-index:2}

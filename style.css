@@ -125,3 +125,14 @@ main{height:100svh;display:grid;place-items:center}
 .network-title{left:610px;top:1140px;font-size:28px}
 
 .kraft-folder.closed #openNetwork{pointer-events:none}
+
+/* A real two-sided cover: the artwork stays on its inside face as the cover turns. */
+.kraft-folder{filter:none;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.4,.05,.2,1),opacity .6s}
+.folder-left,.kraft-folder.closed .folder-left{background:none;border:0;box-shadow:none;transform-style:preserve-3d;backface-visibility:visible}
+.folder-left .folder-inner,.folder-left .folder-outer{position:absolute;inset:0;width:100%;height:100%;border-radius:5px 0 0 6px;backface-visibility:hidden}
+.folder-inner{transform:translateZ(.6px);box-shadow:inset -15px 0 18px -14px #3b250c,inset 1px 1px 2px #fff4}
+.folder-outer{transform:rotateY(180deg) translateZ(.6px);box-shadow:inset 0 0 0 1px #d6b77a88,0 3px 6px #0004}
+#openNetwork,.kraft-folder.closed #openNetwork{visibility:visible;backface-visibility:hidden;transition:transform .3s}
+#openNetwork{transform:translateZ(1px) rotate(-3deg)}
+#openNetwork:hover{transform:translateZ(1px) rotate(-1deg) translateY(-2%)}
+@media(prefers-reduced-motion:reduce){.kraft-folder,.folder-left{transition:none}}

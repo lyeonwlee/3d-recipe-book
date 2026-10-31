@@ -79,10 +79,24 @@ const networkView=document.querySelector('#networkView'),networkWorld=document.q
 const evidencePositions=[[160,90,-100,-7],[540,70,70,5],[1080,70,-30,-4],[1420,160,100,7],[100,530,20,4],[440,810,120,-5],[940,820,-40,4],[1390,710,20,-8],[680,300,-180,6],[1070,440,160,-4]];
 for(let i=0;i<evidencePositions.length;i++){const [x,y,z,r]=evidencePositions[i];const tile=document.createElement('div');tile.className='evidence-card';tile.dataset.number=`EVIDENCE / ${String(i+1).padStart(2,'0')}`;tile.style.transform=`translate3d(${x}px,${y}px,${z}px) rotateZ(${r}deg)`;tile.innerHTML=`<img src="photo-${i}.jpg" alt="공범 관계도 원본 증거 사진 ${i+1}" draggable="false">`;networkWorld.append(tile)}
 const connections=[[0,1],[1,2],[2,3],[0,4],[4,5],[5,6],[6,7],[7,3],[1,5],[4,9],[9,2],[9,6],[8,0],[8,7],[4,2],[5,9]];
-for(const [a,b] of connections){const A=evidencePositions[a],B=evidencePositions[b];const x=A[0]+120,y=A[1]+120,z=A[2]+3,dx=B[0]+120-x,dy=B[1]+120-y,dz=B[2]+3-z;const flat=Math.hypot(dx,dy),length=Math.hypot(flat,dz);const thread=document.createElement('div');thread.className='red-thread';thread.style.width=length+'px';thread.style.transform=`translate3d(${x}px,${y}px,${z}px) rotateZ(${Math.atan2(dy,dx)}rad) rotateY(${-Math.atan2(dz,flat)}rad)`;networkWorld.append(thread)}
+// All red threads live behind the rearmost photograph.
+// Project their anchors onto that rear plane so the ends still meet the cards as the view moves.
+const threadDepth=Math.min(...evidencePositions.map(position=>position[2]))-120;
+const networkThreads=connections.map(()=>{const thread=document.createElement('div');thread.className='red-thread';networkWorld.prepend(thread);return thread});
+function positionNetworkThreads(scale){
+ const yaw=netYaw*Math.PI/180,tilt=netTilt*Math.PI/180;
+ const vx=-netPanX/scale,vy=-netPanY/scale,vz=1500;
+ const ry=Math.cos(tilt)*vy+Math.sin(tilt)*vz,rz=-Math.sin(tilt)*vy+Math.cos(tilt)*vz;
+ const camera=[900+Math.cos(yaw)*vx-Math.sin(yaw)*rz,600+ry,Math.sin(yaw)*vx+Math.cos(yaw)*rz];
+ function behindCard(index){
+  const [x,y,z]=evidencePositions[index],t=(threadDepth-camera[2])/(z-camera[2]);
+  return [camera[0]+t*(x+120-camera[0]),camera[1]+t*(y+132.5-camera[1])];
+ }
+ connections.forEach(([a,b],index)=>{const A=behindCard(a),B=behindCard(b),dx=B[0]-A[0],dy=B[1]-A[1],thread=networkThreads[index];thread.style.width=Math.hypot(dx,dy)+'px';thread.style.transform=`translate3d(${A[0]}px,${A[1]-1.2}px,${threadDepth}px) rotateZ(${Math.atan2(dy,dx)}rad)`});
+}
 networkWorld.insertAdjacentHTML('beforeend','<div class="network-title">ACCOMPLICE NETWORK<small>GUILTY UNTIL DELICIOUS</small></div>');
 let netPanX=0,netPanY=0,netYaw=-8,netTilt=5,netZoom=1,netDrag=null,netIgnoreUntil=0;
-function renderNetwork(){const fit=Math.min(window.innerWidth/1800,window.innerHeight/1200)*.9;networkCamera.style.transform=`translate(${netPanX}px,${netPanY}px) scale(${fit*netZoom})`;networkWorld.style.transform=`rotateX(${netTilt}deg) rotateY(${netYaw}deg)`}
+function renderNetwork(){const fit=Math.min(window.innerWidth/1800,window.innerHeight/1200)*.9;networkCamera.style.transform=`translate(${netPanX}px,${netPanY}px) scale(${fit*netZoom})`;networkWorld.style.transform=`rotateX(${netTilt}deg) rotateY(${netYaw}deg)`;positionNetworkThreads(fit*netZoom)}
 document.querySelector('#openNetwork').addEventListener('click',e=>{e.stopPropagation();if(kraftFolder.classList.contains('closed')){toggleFolder();return}networkView.hidden=false;netPanX=netPanY=0;netYaw=-8;netTilt=5;netZoom=1;renderNetwork();networkView.tabIndex=-1;networkView.focus()});
 function closeNetwork(){networkView.hidden=true;netDrag=null;networkView.classList.remove('dragging');document.querySelector('#openNetwork').focus({preventScroll:true})}
 networkView.addEventListener('pointerdown',e=>{if(e.button!==0)return;netDrag={id:e.pointerId,x:e.clientX,y:e.clientY,yaw:netYaw,tilt:netTilt,px:netPanX,py:netPanY,pan:e.shiftKey,moved:false}});
